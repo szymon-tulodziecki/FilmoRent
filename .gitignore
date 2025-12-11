@@ -1,0 +1,63 @@
+# Laravel Framework
+/vendor/
+/node_modules/
+/public/hot
+/public/storage
+/public/build
+/storage/*.key
+/storage/pail
+/bootstrap/cache/*
+/.phpunit.cache
+.phpunit.result.cache
+
+# Environment files
+.env
+.env.backup
+.env.production
+
+# IDE & Editors
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.zed
+.phpactor.json
+*.swp
+*.swo
+*~
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+/coverage
+
+# Composer
+composer.phar
+/auth.json
+
+# Homestead / Sail
+Homestead.json
+Homestead.yaml
+docker-compose.override.yml
+
+# Backup files
+*.bak
+*.backup
+*_backup.*
