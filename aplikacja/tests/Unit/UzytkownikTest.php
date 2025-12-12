@@ -13,7 +13,7 @@ class UzytkownikTest extends TestCase
 
     public function test_get_name_attribute_returns_full_name()
     {
-        $user = Uzytkownik::factory()->make([
+        $user = new Uzytkownik([
             'imie' => 'Jan',
             'nazwisko' => 'Kowalski',
         ]);
@@ -22,19 +22,22 @@ class UzytkownikTest extends TestCase
 
     public function test_can_access_panel_only_for_admin_and_pracownik()
     {
-        $adminRole = Rola::factory()->make(['klucz' => 'admin']);
-        $pracownikRole = Rola::factory()->make(['klucz' => 'pracownik']);
-        $klientRole = Rola::factory()->make(['klucz' => 'klient']);
+        $adminRole = new Rola(['klucz' => 'admin']);
+        $adminRole->id = 1;
+        $pracownikRole = new Rola(['klucz' => 'pracownik']);
+        $pracownikRole->id = 2;
+        $klientRole = new Rola(['klucz' => 'klient']);
+        $klientRole->id = 3;
 
-        $admin = Uzytkownik::factory()->make(['rola_id' => 1]);
+        $admin = new Uzytkownik(['rola_id' => 1]);
         $admin->setRelation('rola', $adminRole);
         $this->assertTrue($admin->canAccessPanel(new \Filament\Panel()));
 
-        $pracownik = Uzytkownik::factory()->make(['rola_id' => 2]);
+        $pracownik = new Uzytkownik(['rola_id' => 2]);
         $pracownik->setRelation('rola', $pracownikRole);
         $this->assertTrue($pracownik->canAccessPanel(new \Filament\Panel()));
 
-        $klient = Uzytkownik::factory()->make(['rola_id' => 3]);
+        $klient = new Uzytkownik(['rola_id' => 3]);
         $klient->setRelation('rola', $klientRole);
         $this->assertFalse($klient->canAccessPanel(new \Filament\Panel()));
     }
