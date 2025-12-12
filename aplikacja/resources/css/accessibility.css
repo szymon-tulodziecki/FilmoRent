@@ -1,0 +1,191 @@
+/* FilmoRent CRM - Dostępność WCAG 2.1 Level AA */
+
+/* Poprawa kontrastu dla osób niedowidzących */
+:root {
+    --focus-ring-color: #0066cc;
+    --focus-ring-width: 3px;
+    --min-touch-target: 44px;
+}
+
+/* Tryb wysokiego kontrastu */
+html.high-contrast {
+    --high-contrast-bg: #000000;
+    --high-contrast-fg: #FFFFFF;
+    --high-contrast-primary: #FFFF00;
+    --high-contrast-secondary: #00FFFF;
+    --high-contrast-danger: #FF0000;
+    --high-contrast-success: #00FF00;
+    --high-contrast-border: #FFFFFF;
+}
+
+html.high-contrast body {
+    background-color: var(--high-contrast-bg) !important;
+    color: var(--high-contrast-fg) !important;
+}
+
+html.high-contrast .fi-body,
+html.high-contrast .fi-section,
+html.high-contrast .fi-ta,
+html.high-contrast .fi-sidebar,
+html.high-contrast .fi-main {
+    background-color: var(--high-contrast-bg) !important;
+    color: var(--high-contrast-fg) !important;
+}
+
+html.high-contrast .fi-btn {
+    background-color: var(--high-contrast-bg) !important;
+    color: var(--high-contrast-primary) !important;
+    border: 2px solid var(--high-contrast-primary) !important;
+}
+
+html.high-contrast .fi-btn:hover {
+    background-color: var(--high-contrast-primary) !important;
+    color: var(--high-contrast-bg) !important;
+}
+
+html.high-contrast a {
+    color: var(--high-contrast-secondary) !important;
+    text-decoration: underline !important;
+}
+
+html.high-contrast .fi-section {
+    border: 2px solid var(--high-contrast-border) !important;
+}
+
+html.high-contrast .fi-ta-row {
+    border-bottom: 1px solid var(--high-contrast-border) !important;
+}
+
+html.high-contrast .fi-badge {
+    background-color: var(--high-contrast-bg) !important;
+    color: var(--high-contrast-primary) !important;
+    border: 2px solid var(--high-contrast-primary) !important;
+}
+
+html.high-contrast input,
+html.high-contrast select,
+html.high-contrast textarea {
+    background-color: var(--high-contrast-bg) !important;
+    color: var(--high-contrast-fg) !important;
+    border: 2px solid var(--high-contrast-border) !important;
+}
+
+/* Focus states - wyraźne zaznaczenie dla nawigacji klawiaturą */
+*:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color) !important;
+    outline-offset: 2px !important;
+    border-radius: 4px;
+}
+
+/* Zwiększone rozmiary dotykowe (WCAG 2.5.5) */
+button, a, input, select, textarea {
+    min-height: var(--min-touch-target);
+    min-width: var(--min-touch-target);
+}
+
+/* Wsparcie dla skalowania tekstu - bez utraty funkcjonalności do 200% */
+html {
+    font-size: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Wysokokontrast dla tekstu */
+.fi-body {
+    color: #1a1a1a;
+}
+
+/* Skip to main content link dla użytkowników czytników ekranu */
+.skip-to-main {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 100;
+}
+
+.skip-to-main:focus {
+    top: 0;
+}
+
+/* Poprawa czytelności dla dysleksji */
+.fi-fo-field-wrp-label,
+.fi-ta-text,
+.fi-section-header-heading {
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+}
+
+/* Wsparcie dla dużego tekstu (zoom)  */
+@media (min-width: 768px) {
+    .fi-main {
+        max-width: none !important;
+    }
+}
+
+/* Etykiety formularzy - zawsze widoczne */
+.fi-fo-field-wrp-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+}
+
+/* Komunikaty błędów - wysokokontrast */
+.fi-fo-field-wrp-error-message {
+    color: #c00000;
+    font-weight: 600;
+    background-color: #fff0f0;
+    padding: 0.5rem;
+    border-left: 4px solid #c00000;
+    margin-top: 0.5rem;
+}
+
+/* Tooltips i helper text - czytelne */
+.fi-fo-field-wrp-hint {
+    color: #4a4a4a;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+/* Tabele - zebra striping dla czytelności */
+.fi-ta-row:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* Przyciski - wysokokontrast i wyraźne stany */
+.fi-btn {
+    font-weight: 600;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.fi-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.fi-btn:active {
+    transform: translateY(0);
+}
+
+/* Oznaczenie wymaganych pól */
+.fi-fo-field-wrp.fi-required .fi-fo-field-wrp-label::after {
+    content: " *";
+    color: #c00000;
+    font-weight: bold;
+}
+
+/* Dostępne kolory status badges */
+.fi-badge {
+    font-weight: 600;
+    border: 1px solid currentColor;
+}

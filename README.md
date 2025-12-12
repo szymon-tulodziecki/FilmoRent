@@ -1,6 +1,6 @@
 # Aplikacje Internetowe I 
 
-**Autor:** Szymon Tułodzieckie  
+**Autor:** Szymon Tułodziecki  
 **Nr albumu:** 21312
 
 ---
@@ -42,11 +42,38 @@ Aplikacja zawiera **minimum 5 testów jednostkowych** weryfikujących poprawnoś
 
 ## <span style="color: #6366f1;">Technologie</span>
 
-- **Framework:** Laravel
+- **Framework:** Laravel 11 + Filament 3
 - **Baza danych:** Zgodna z różnymi systemami (MySQL, PostgreSQL, SQLite)
-- **Frontend:** Tailwind CSS
+- **Frontend:** Tailwind CSS + Livewire
 - **Kontrola wersji:** Git
 - **Testy:** PHPUnit
+
+## 🔐 Dane Logowania
+
+System zawiera 3 predefiniowane konta użytkowników:
+
+| Rola | Email | Hasło | Uprawnienia |
+|------|-------|-------|-------------|
+| **Administrator** | admin@filmorent.pl | `Admin123!` | Pełny dostęp |
+| **Pracownik** | pracownik@filmorent.pl | `Pracownik123!` | Zarządzanie wypożyczeniami |
+| **Klient** | klient@filmorent.pl | `Klient123!` | Rezerwacje i wypożyczenia |
+
+👉 **Szczegóły:** [DANE_LOGOWANIA.md](DANE_LOGOWANIA.md)
+
+## 📋 Instalacja
+
+Zobacz szczegółową instrukcję w pliku [INSTALACJA.md](INSTALACJA.md)
+
+```bash
+cd aplikacja
+composer install
+npm install
+php artisan migrate
+php artisan db:seed
+php artisan serve
+```
+
+Panel administracyjny: **http://localhost:8000/admin**
 
 
 --- 
