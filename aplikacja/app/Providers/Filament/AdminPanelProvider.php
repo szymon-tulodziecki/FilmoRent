@@ -11,6 +11,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -30,11 +31,15 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->brandName('FilmoRent CRM')
             ->favicon(asset('favicon.ico'))
+            ->darkMode(false)
+            ->maxContentWidth(MaxWidth::Full)
             ->colors([
-                'primary' => Color::Blue,
-                'danger' => Color::Red,
-                'success' => Color::Green,
+                'primary' => Color::Sky,
+                'danger' => Color::Rose,
+                'success' => Color::Emerald,
                 'warning' => Color::Amber,
+                'info' => Color::Blue,
+                'gray' => Color::Slate,
             ])
             ->navigationGroups([
                 'Transakcje',
