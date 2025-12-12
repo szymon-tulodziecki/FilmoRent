@@ -12,6 +12,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
+use Filament\Facades\Filament;
 
 class UzytkownikResource extends Resource
 {
@@ -19,46 +21,93 @@ class UzytkownikResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
     
-    protected static ?string $navigationLabel = 'Klienci';
+    protected static ?string $navigationLabel = 'Użytkownicy';
     
-    protected static ?string $modelLabel = 'Klient';
+    protected static ?string $modelLabel = 'Użytkownik';
     
-    protected static ?string $pluralModelLabel = 'Klienci';
+    protected static ?string $pluralModelLabel = 'Użytkownicy';
     
     protected static ?string $navigationGroup = 'Użytkownicy';
+
+    /**
+     * Pracownik nie widzi administratorów
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        $user = Filament::auth()->user();
+        
+        // Jeśli zalogowany użytkownik to pracownik - nie pokazuj administratorów
+        if ($user && $user->rola?->klucz === 'pracownik') {
+            $query->whereHas('rola', function ($q) {
+                $q->where('klucz', '!=', 'admin');
+            });
+        }
+        
+        return $query;
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Section::make('Dane osobowe')
+                    ->description('Podstawowe informacje o użytkowniku')
                     ->schema([
                         Forms\Components\TextInput::make('imie')
                             ->label('Imię')
-                            ->required(),
+                            ->required()
+                            ->maxLength(100)
+                            ->autocomplete('given-name')
+                            ->autofocus(),
                         Forms\Components\TextInput::make('nazwisko')
                             ->label('Nazwisko')
-                            ->required(),
+                            ->required()
+                            ->maxLength(100)
+                            ->autocomplete('family-name'),
                         Forms\Components\TextInput::make('email')
-                            ->label('Email')
+                            ->label('Adres email')
                             ->email()
-                            ->required(),
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->autocomplete('email')
+                            ->helperText('Adres email będzie używany do logowania'),
                         Forms\Components\TextInput::make('telefon')
-                            ->label('Telefon')
-                            ->tel(),
+                            ->label('Numer telefonu')
+                            ->tel()
+                            ->maxLength(20)
+                            ->placeholder('+48 XXX XXX XXX'),
                     ])->columns(2),
                     
-                Forms\Components\Section::make('Konto')
+                Forms\Components\Section::make('Konto i uprawnienia')
+                    ->description('Konfiguracja dostępu i roli użytkownika')
                     ->schema([
                         Forms\Components\Select::make('rola_id')
-                            ->relationship('rola', 'nazwa')
-                            ->label('Rola')
-                            ->required(),
+                            ->relationship('rola', 'nazwa', function ($query) {
+                                // Pracownik nie może przypisać roli Administrator
+                                $user = Filament::auth()->user();
+                                if ($user && $user->rola?->klucz === 'pracownik') {
+                                    $query->where('klucz', '!=', 'admin');
+                                }
+                                return $query;
+                            })
+                            ->label('Rola w systemie')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->helperText('Administrator - pełny dostęp | Pracownik - zarządzanie wypożyczeniami | Klient - przeglądanie i rezerwacje'),
                         Forms\Components\TextInput::make('haslo')
                             ->label('Hasło')
                             ->password()
                             ->required(fn ($context) => $context === 'create')
-                            ->dehydrated(fn ($state) => filled($state)),
+                            ->minLength(8)
+                            ->dehydrated(fn ($state) => filled($state))
+                            ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                            ->helperText('Minimum 8 znaków. Pozostaw puste aby nie zmieniać hasła.'),
+                        Forms\Components\DateTimePicker::make('zweryfikowany_email_data')
+                            ->label('Data weryfikacji email')
+                            ->helperText('Pozostaw puste jeśli email nie został zweryfikowany'),
                     ])->columns(2),
             ]);
     }
@@ -111,7 +160,8 @@ class UzytkownikResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AdresyRelationManager::class,
+            RelationManagers\WypozyczenieRelationManager::class,
         ];
     }
 

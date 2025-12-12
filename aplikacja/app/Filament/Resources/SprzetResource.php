@@ -31,47 +31,107 @@ class SprzetResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('kategoria_id')
-                    ->relationship('kategoria', 'nazwa')
-                    ->label('Kategoria')
-                    ->required(),
-                Forms\Components\Select::make('producent_id')
-                    ->relationship('producent', 'nazwa')
-                    ->label('Producent')
-                    ->required(),
-                Forms\Components\TextInput::make('nazwa')
-                    ->label('Nazwa')
-                    ->required(),
-                Forms\Components\TextInput::make('numer_seryjny')
-                    ->label('Numer seryjny')
-                    ->required(),
-                Forms\Components\Textarea::make('opis')
-                    ->label('Opis')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('cena_doba')
-                    ->label('Cena za dobę (PLN)')
-                    ->required()
-                    ->numeric()
-                    ->prefix('PLN'),
-                Forms\Components\TextInput::make('kaucja')
-                    ->label('Kaucja (PLN)')
-                    ->required()
-                    ->numeric()
-                    ->prefix('PLN'),
-                Forms\Components\TextInput::make('wartosc_rynkowa')
-                    ->label('Wartość rynkowa (PLN)')
-                    ->required()
-                    ->numeric()
-                    ->prefix('PLN'),
-                Forms\Components\Select::make('status_sprzetu')
-                    ->label('Status')
-                    ->options([
-                        'dostepny' => 'Dostępny',
-                        'wypozyczony' => 'Wypożyczony',
-                        'serwis' => 'W serwisie',
-                        'niedostepny' => 'Niedostępny',
-                    ])
-                    ->required(),
+                Forms\Components\Section::make('Podstawowe informacje')
+                    ->description('Informacje identyfikacyjne sprzętu')
+                    ->schema([
+                        Forms\Components\Select::make('kategoria_id')
+                            ->relationship('kategoria', 'nazwa')
+                            ->label('Kategoria')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('nazwa')
+                                    ->label('Nazwa kategorii')
+                                    ->required()
+                                    ->maxLength(100),
+                                Forms\Components\TextInput::make('slug')
+                                    ->label('Slug URL')
+                                    ->required()
+                                    ->maxLength(100),
+                                Forms\Components\Select::make('rodzic_id')
+                                    ->relationship('rodzic', 'nazwa')
+                                    ->label('Kategoria nadrzędna'),
+                            ]),
+                        Forms\Components\Select::make('producent_id')
+                            ->relationship('producent', 'nazwa')
+                            ->label('Producent')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('nazwa')
+                                    ->label('Nazwa producenta')
+                                    ->required()
+                                    ->maxLength(100),
+                                Forms\Components\Textarea::make('opis')
+                                    ->label('Opis producenta')
+                                    ->rows(3),
+                            ]),
+                        Forms\Components\TextInput::make('nazwa')
+                            ->label('Nazwa sprzętu')
+                            ->required()
+                            ->maxLength(255)
+                            ->placeholder('np. Sony FX3 Full-Frame')
+                            ->autofocus(),
+                        Forms\Components\TextInput::make('numer_seryjny')
+                            ->label('Numer seryjny')
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(100)
+                            ->placeholder('SN-XXXXXXXX-001'),
+                    ])->columns(2),
+                    
+                Forms\Components\Section::make('Opis')
+                    ->description('Szczegółowy opis i specyfikacja')
+                    ->schema([
+                        Forms\Components\Textarea::make('opis')
+                            ->label('Szczegółowy opis')
+                            ->rows(4)
+                            ->columnSpanFull()
+                            ->placeholder('Profesjonalny sprzęt filmowy, specyfikacja techniczna...'),
+                    ]),
+                    
+                Forms\Components\Section::make('Wycena i status')
+                    ->description('Informacje finansowe i dostępność')
+                    ->schema([
+                        Forms\Components\TextInput::make('cena_doba')
+                            ->label('Cena za dobę (PLN)')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->prefix('PLN')
+                            ->step(0.01),
+                        Forms\Components\TextInput::make('kaucja')
+                            ->label('Kaucja (PLN)')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->prefix('PLN')
+                            ->step(0.01)
+                            ->helperText('Zabezpieczenie przy wydaniu sprzętu'),
+                        Forms\Components\TextInput::make('wartosc_rynkowa')
+                            ->label('Wartość rynkowa (PLN)')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->prefix('PLN')
+                            ->step(0.01)
+                            ->helperText('Wartość odtworzeniowa dla ubezpieczyciela'),
+                        Forms\Components\Select::make('status_sprzetu')
+                            ->label('Status')
+                            ->options([
+                                'dostepny' => 'Dostępny',
+                                'wypozyczony' => 'Wypożyczony',
+                                'w_serwisie' => 'W serwisie',
+                                'niedostepny' => 'Niedostępny',
+                                'wycofany' => 'Wycofany',
+                                'zaginiony' => 'Zaginiony',
+                            ])
+                            ->required()
+                            ->default('dostepny')
+                            ->native(false),
+                    ])->columns(2),
             ]);
     }
 

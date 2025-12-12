@@ -18,6 +18,9 @@ class AdresResource extends Resource
     protected static ?string $model = Adres::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    
+    // Ukryj z głównego menu - adresy są zarządzane przez RelationManager w Użytkownikach
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
     {

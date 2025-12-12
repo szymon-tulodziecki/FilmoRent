@@ -24,27 +24,41 @@ class DatabaseSeeder extends Seeder
         $klient = Rola::create(['nazwa' => 'Klient', 'klucz' => 'klient']);
 
         // === UŻYTKOWNICY ===
+        // Administrator - pełny dostęp do systemu
         $adminUser = Uzytkownik::create([
             'rola_id' => $admin->id,
             'imie' => 'Jan',
             'nazwisko' => 'Kowalski',
             'email' => 'admin@filmorent.pl',
-            'haslo' => Hash::make('password'),
+            'haslo' => Hash::make('Admin123!'),
             'telefon' => '+48 500 100 200',
+            'zweryfikowany_email_data' => now(),
         ]);
 
+        // Pracownik - zarządzanie wypożyczeniami
         $pracownikUser = Uzytkownik::create([
             'rola_id' => $pracownik->id,
             'imie' => 'Anna',
             'nazwisko' => 'Nowak',
             'email' => 'pracownik@filmorent.pl',
-            'haslo' => Hash::make('password'),
+            'haslo' => Hash::make('Pracownik123!'),
             'telefon' => '+48 500 100 201',
+            'zweryfikowany_email_data' => now(),
+        ]);
+
+        // Klient - przeglądanie i rezerwacje
+        $klientUser = Uzytkownik::create([
+            'rola_id' => $klient->id,
+            'imie' => 'Piotr',
+            'nazwisko' => 'Wiśniewski',
+            'email' => 'klient@filmorent.pl',
+            'haslo' => Hash::make('Klient123!'),
+            'telefon' => '+48 500 100 202',
+            'zweryfikowany_email_data' => now(),
         ]);
 
         $klienci = [];
         $klientData = [
-            ['imie' => 'Piotr', 'nazwisko' => 'Wiśniewski', 'email' => 'piotr@example.com'],
             ['imie' => 'Maria', 'nazwisko' => 'Wójcik', 'email' => 'maria@example.com'],
             ['imie' => 'Tomasz', 'nazwisko' => 'Kamiński', 'email' => 'tomasz@example.com'],
             ['imie' => 'Katarzyna', 'nazwisko' => 'Lewandowska', 'email' => 'kasia@example.com'],

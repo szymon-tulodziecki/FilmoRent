@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Widgets\StatsOverview;
+use App\Filament\Widgets\AccessibilityWidget;
+use App\Filament\Pages\Dashboard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -20,6 +22,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
+use Illuminate\Support\Facades\Blade;
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -33,13 +37,14 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('favicon.ico'))
             ->darkMode(false)
             ->maxContentWidth(MaxWidth::Full)
+            ->font('Inter')
             ->colors([
-                'primary' => Color::Sky,
-                'danger' => Color::Rose,
-                'success' => Color::Emerald,
+                'primary' => Color::Blue,
+                'danger' => Color::Red,
+                'success' => Color::Green,
                 'warning' => Color::Amber,
-                'info' => Color::Blue,
-                'gray' => Color::Slate,
+                'info' => Color::Sky,
+                'gray' => Color::Zinc,
             ])
             ->navigationGroups([
                 'Transakcje',
@@ -49,10 +54,11 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                AccessibilityWidget::class,
                 StatsOverview::class,
                 Widgets\AccountWidget::class,
             ])
