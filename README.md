@@ -1,6 +1,6 @@
 # Aplikacje Internetowe I 
 
-**Autor:** Szymon Tułodzieckie  
+**Autor:** Szymon Tułodziecki  
 **Nr albumu:** 21312
 
 ---
