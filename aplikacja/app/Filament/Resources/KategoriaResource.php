@@ -26,6 +26,18 @@ class KategoriaResource extends Resource
     protected static ?string $pluralModelLabel = 'Kategorie';
     
     protected static ?string $navigationGroup = 'Magazyn';
+    
+    protected static ?string $slug = 'kategorie';
+
+    public static function getCreateLabel(): string
+    {
+        return 'Dodaj Kategorię';
+    }
+
+    public static function getEditLabel(): string
+    {
+        return 'Edytuj Kategorię';
+    }
 
     public static function form(Form $form): Form
     {

@@ -28,6 +28,33 @@ class UzytkownikResource extends Resource
     protected static ?string $pluralModelLabel = 'Użytkownicy';
     
     protected static ?string $navigationGroup = 'Użytkownicy';
+    
+    protected static ?string $slug = 'uzytkownicy';
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Użytkownicy';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'Użytkownik';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Użytkownicy';
+    }
+
+    public static function getCreateLabel(): string
+    {
+        return 'Dodaj Użytkownika';
+    }
+
+    public static function getEditLabel(): string
+    {
+        return 'Edytuj Użytkownika';
+    }
 
     /**
      * Pracownik nie widzi administratorów
@@ -78,6 +105,68 @@ class UzytkownikResource extends Resource
                             ->tel()
                             ->maxLength(20)
                             ->placeholder('+48 XXX XXX XXX'),
+                    ])->columns(2),
+
+                Forms\Components\Section::make('Profil klienta')
+                    ->description('Typ klienta oraz dane indywidualne lub firmowe')
+                    ->schema([
+                        Forms\Components\Select::make('typ_klienta')
+                            ->label('Typ klienta')
+                            ->options([
+                                'indywidualny' => 'Klient indywidualny',
+                                'biznesowy' => 'Klient biznesowy',
+                            ])
+                            ->required()
+                            ->reactive(),
+
+                        Forms\Components\TextInput::make('pesel')
+                            ->label('PESEL')
+                            ->maxLength(11)
+                            ->visible(fn (callable $get) => $get('typ_klienta') === 'indywidualny'),
+
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('nazwa_firmy')
+                                    ->label('Nazwa firmy')
+                                    ->maxLength(255)
+                                    ->visible(fn (callable $get) => $get('typ_klienta') === 'biznesowy'),
+                                Forms\Components\TextInput::make('nip')
+                                    ->label('NIP')
+                                    ->maxLength(10)
+                                    ->visible(fn (callable $get) => $get('typ_klienta') === 'biznesowy'),
+                            ]),
+
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('regon')
+                                    ->label('REGON')
+                                    ->maxLength(14)
+                                    ->visible(fn (callable $get) => $get('typ_klienta') === 'biznesowy'),
+                                Forms\Components\TextInput::make('osoba_kontaktowa')
+                                    ->label('Osoba kontaktowa')
+                                    ->maxLength(255)
+                                    ->visible(fn (callable $get) => $get('typ_klienta') === 'biznesowy'),
+                            ]),
+
+                        Forms\Components\TextInput::make('stanowisko')
+                            ->label('Stanowisko')
+                            ->maxLength(100)
+                            ->visible(fn (callable $get) => $get('typ_klienta') === 'biznesowy'),
+
+                        Forms\Components\Select::make('status_klienta')
+                            ->label('Status klienta')
+                            ->options([
+                                'aktywny' => 'Aktywny',
+                                'wstrzymany' => 'Wstrzymany',
+                                'zablokowany' => 'Zablokowany',
+                            ])
+                            ->default('aktywny')
+                            ->required(),
+
+                        Forms\Components\Textarea::make('notatki_crm')
+                            ->label('Notatki CRM')
+                            ->rows(3)
+                            ->maxLength(2000),
                     ])->columns(2),
                     
                 Forms\Components\Section::make('Konto i uprawnienia')
@@ -131,6 +220,27 @@ class UzytkownikResource extends Resource
                 Tables\Columns\TextColumn::make('telefon')
                     ->label('Telefon')
                     ->searchable(),
+                Tables\Columns\BadgeColumn::make('typ_klienta')
+                    ->label('Typ klienta')
+                    ->colors([
+                        'success' => 'indywidualny',
+                        'warning' => 'biznesowy',
+                    ])
+                    ->formatStateUsing(fn (string $state) => $state === 'biznesowy' ? 'Biznesowy' : 'Indywidualny'),
+                Tables\Columns\BadgeColumn::make('status_klienta')
+                    ->label('Status')
+                    ->colors([
+                        'success' => 'aktywny',
+                        'warning' => 'wstrzymany',
+                        'danger' => 'zablokowany',
+                    ])
+                    ->formatStateUsing(function (string $state) {
+                        return [
+                            'aktywny' => 'Aktywny',
+                            'wstrzymany' => 'Wstrzymany',
+                            'zablokowany' => 'Zablokowany',
+                        ][$state] ?? $state;
+                    }),
                 Tables\Columns\TextColumn::make('rola.nazwa')
                     ->label('Rola')
                     ->badge()
@@ -147,12 +257,12 @@ class UzytkownikResource extends Resource
                     ->label('Rola'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()->label('Podgląd'),
+                Tables\Actions\EditAction::make()->label('Edytuj'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('Usuń zaznaczone'),
                 ]),
             ]);
     }
@@ -160,8 +270,6 @@ class UzytkownikResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\AdresyRelationManager::class,
-            RelationManagers\WypozyczenieRelationManager::class,
         ];
     }
 

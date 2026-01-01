@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="pl">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    @include('components.styles')
     <style>
         body { font-family: 'Manrope', sans-serif; }
         .hero-bg { background: url('https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat; }
@@ -14,25 +15,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 antialiased">
 
-    <!-- Navigation -->
-    <nav class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="/" class="flex-shrink-0">
-                        <i data-lucide="camera" class="w-8 h-8 text-amber-500"></i>
-                    </a>
-                </div>
-                <div class="flex items-center space-x-8">
-                    <a href="/" class="text-slate-300 hover:text-amber-500 transition duration-150 text-sm font-medium">Strona główna</a>
-                    <a href="/sklep" class="text-slate-300 hover:text-amber-500 transition duration-150 text-sm font-medium">Sklep</a>
-                    <a href="/o-nas" class="text-amber-500 border-b-2 border-amber-500 transition duration-150 text-sm font-medium">O nas</a>
-                    <a href="/koszyk" class="text-slate-300 hover:text-amber-500 transition duration-150 text-sm font-medium">Koszyk</a>
-                    <a href="/logowanie" class="text-slate-300 hover:text-amber-500 transition duration-150 text-sm font-medium">Logowanie</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    @include('components.navbar')
 
     <!-- Hero Section -->
     <section class="hero-bg relative">
@@ -146,9 +129,7 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-slate-900 rounded-xl p-8 text-center border border-slate-800">
-                    <div class="bg-slate-800 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
-                        <i data-lucide="user" class="w-12 h-12 text-amber-400"></i>
-                    </div>
+                    <img src="https://i.pravatar.cc/500?img=12" alt="Marek Kowalski" class="w-24 h-24 rounded-full mx-auto mb-6 object-cover">
                     <h3 class="text-xl font-semibold text-white mb-2">Marek Kowalski</h3>
                     <p class="text-amber-400 mb-4">Założyciel & CEO</p>
                     <p class="text-slate-400 text-sm leading-relaxed">
@@ -156,9 +137,7 @@
                     </p>
                 </div>
                 <div class="bg-slate-900 rounded-xl p-8 text-center border border-slate-800">
-                    <div class="bg-slate-800 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
-                        <i data-lucide="user" class="w-12 h-12 text-amber-400"></i>
-                    </div>
+                    <img src="https://i.pravatar.cc/500?img=47" alt="Anna Nowak" class="w-24 h-24 rounded-full mx-auto mb-6 object-cover">
                     <h3 class="text-xl font-semibold text-white mb-2">Anna Nowak</h3>
                     <p class="text-amber-400 mb-4">Dyrektor Techniczny</p>
                     <p class="text-slate-400 text-sm leading-relaxed">
@@ -166,9 +145,7 @@
                     </p>
                 </div>
                 <div class="bg-slate-900 rounded-xl p-8 text-center border border-slate-800">
-                    <div class="bg-slate-800 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
-                        <i data-lucide="user" class="w-12 h-12 text-amber-400"></i>
-                    </div>
+                    <img src="https://i.pravatar.cc/500?img=33" alt="Piotr Wiśniewski" class="w-24 h-24 rounded-full mx-auto mb-6 object-cover">
                     <h3 class="text-xl font-semibold text-white mb-2">Piotr Wiśniewski</h3>
                     <p class="text-amber-400 mb-4">Manager ds. Klientów</p>
                     <p class="text-slate-400 text-sm leading-relaxed">

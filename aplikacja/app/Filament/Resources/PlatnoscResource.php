@@ -26,6 +26,23 @@ class PlatnoscResource extends Resource
     protected static ?string $pluralModelLabel = 'Płatności';
     
     protected static ?string $navigationGroup = 'Transakcje';
+    
+    protected static ?string $slug = 'platnosci';
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return false;
+    }
 
     public static function form(Form $form): Form
     {
@@ -128,11 +145,10 @@ class PlatnoscResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    //
                 ]),
             ]);
     }
@@ -148,8 +164,6 @@ class PlatnoscResource extends Resource
     {
         return [
             'index' => Pages\ListPlatnoscs::route('/'),
-            'create' => Pages\CreatePlatnosc::route('/create'),
-            'edit' => Pages\EditPlatnosc::route('/{record}/edit'),
         ];
     }
 }

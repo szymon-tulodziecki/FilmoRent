@@ -15,6 +15,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use App\Models\Sprzet;
+use App\Filament\Resources\WypozyczenieResource\Pages\EditWypozyczenie;
+use App\Filament\Resources\WypozyczenieResource\Pages\CreateWypozyczenie;
+use App\Filament\Resources\WypozyczenieResource\Pages\ViewWypozyczenie;
 
 class WypozyczenieResource extends Resource
 {
@@ -29,6 +32,45 @@ class WypozyczenieResource extends Resource
     protected static ?string $pluralModelLabel = 'Wypożyczenia';
     
     protected static ?string $navigationGroup = 'Transakcje';
+    
+    protected static ?string $slug = 'wypozyczenia';
+
+    public static function getNavigationBadge(): ?string
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return null;
+        }
+
+        // Tylko dla pracowników i adminów
+        if (!in_array($user->rola?->klucz, ['pracownik', 'admin'])) {
+            return null;
+        }
+
+        $count = static::getModel()::query()
+            ->where('pracownik_id', $user->id)
+            ->whereHas('status', function ($query) {
+                $query->whereIn('klucz', ['oczekuje', 'wRealizacji']);
+            })
+            ->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'danger';
+    }
+
+    public static function getCreateLabel(): string
+    {
+        return 'Nowe Wypożyczenie';
+    }
+
+    public static function getEditLabel(): string
+    {
+        return 'Edytuj Wypożyczenie';
+    }
 
     public static function form(Form $form): Form
     {
@@ -41,7 +83,7 @@ class WypozyczenieResource extends Resource
                             ->label('Numer zamówienia')
                             ->default(fn () => 'WYP-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT))
                             ->required()
-                            ->disabled()
+                            ->disabled(fn ($record) => (bool) $record)
                             ->dehydrated()
                             ->unique(ignoreRecord: true),
                         Forms\Components\Select::make('uzytkownik_id')
@@ -54,6 +96,7 @@ class WypozyczenieResource extends Resource
                             ->searchable(['imie', 'nazwisko', 'email'])
                             ->preload()
                             ->required()
+                            ->disabled(fn ($record) => (bool) $record)
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->imie} {$record->nazwisko} ({$record->email})"),
                         Forms\Components\Select::make('pracownik_id')
                             ->relationship('pracownik', 'email', function ($query) {
@@ -64,6 +107,8 @@ class WypozyczenieResource extends Resource
                             ->label('Obsługujący pracownik')
                             ->searchable(['imie', 'nazwisko', 'email'])
                             ->preload()
+                            ->default(fn () => auth()->id())
+                            ->disabled(fn ($record) => (bool) $record)
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->imie} {$record->nazwisko}"),
                         Forms\Components\Select::make('status_id')
                             ->relationship('status', 'nazwa')
@@ -76,12 +121,6 @@ class WypozyczenieResource extends Resource
                 Forms\Components\Section::make('Terminy')
                     ->description('Daty związane z wypożyczeniem')
                     ->schema([
-                        Forms\Components\DateTimePicker::make('data_rezerwacji')
-                            ->label('Data rezerwacji')
-                            ->default(now())
-                            ->required()
-                            ->displayFormat('d.m.Y H:i')
-                            ->seconds(false),
                         Forms\Components\DateTimePicker::make('data_odbioru')
                             ->label('Data odbioru')
                             ->required()
@@ -108,9 +147,12 @@ class WypozyczenieResource extends Resource
                     
                 Forms\Components\Section::make('Sprzęt')
                     ->description('Pozycje wypożyczenia')
+                    ->visibleOn(CreateWypozyczenie::class)
+                    ->hiddenOn('view')
                     ->schema([
                         Forms\Components\Repeater::make('sprzety')
                             ->relationship()
+                            ->disabled(fn ($record) => (bool) $record)
                             ->schema([
                                 Forms\Components\Select::make('id')
                                     ->label('Sprzęt')
@@ -151,18 +193,16 @@ class WypozyczenieResource extends Resource
                     
                 Forms\Components\Section::make('Finanse')
                     ->description('Podsumowanie finansowe')
+                    ->visibleOn(CreateWypozyczenie::class)
+                    ->hiddenOn('view')
                     ->schema([
                         Forms\Components\TextInput::make('suma_calkowita')
                             ->label('Suma całkowita')
                             ->required()
                             ->numeric()
+                            ->disabled(fn ($record) => (bool) $record)
                             ->prefix('PLN')
                             ->helperText('Suma netto + kaucje'),
-                        Forms\Components\Textarea::make('uwagi')
-                            ->label('Uwagi')
-                            ->rows(3)
-                            ->columnSpanFull()
-                            ->placeholder('Dodatkowe informacje o wypożyczeniu...'),
                     ]),
             ]);
     }
@@ -179,6 +219,11 @@ class WypozyczenieResource extends Resource
                     ->label('Klient')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('pracownik.nazwisko')
+                    ->label('Pracownik')
+                    ->searchable()
+                    ->sortable()
+                    ->formatStateUsing(fn ($record) => $record->pracownik ? "{$record->pracownik->imie} {$record->pracownik->nazwisko}" : '-'),
                 Tables\Columns\TextColumn::make('status.nazwa')
                     ->label('Status')
                     ->badge()
@@ -196,19 +241,44 @@ class WypozyczenieResource extends Resource
                     ->money('PLN')
                     ->sortable(),
             ])
-            ->defaultSort('data_rezerwacji', 'desc')
+            ->defaultSort(fn ($query) => $query->orderByRaw("
+                CASE 
+                    WHEN EXISTS (
+                        SELECT 1 FROM statusy_wypozyczenia 
+                        WHERE statusy_wypozyczenia.id = wypozyczenia.status_id 
+                        AND statusy_wypozyczenia.klucz IN ('oczekuje', 'wRealizacji')
+                    ) THEN 0
+                    ELSE 1
+                END, data_rezerwacji DESC
+            "))
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->relationship('status', 'nazwa')
                     ->label('Status'),
+                Tables\Filters\SelectFilter::make('pracownik')
+                    ->relationship('pracownik', 'nazwisko')
+                    ->label('Pracownik')
+                    ->searchable()
+                    ->preload()
+                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->imie} {$record->nazwisko}"),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()->label('Podgląd'),
+                Tables\Actions\EditAction::make()
+                    ->label('Edytuj')
+                    ->visible(function ($record) {
+                        $user = auth()->user();
+                        // Admin widzi wszystkie
+                        if ($user->rola?->klucz === 'admin') {
+                            return true;
+                        }
+                        // Pracownik widzi tylko swoje
+                        return $user->rola?->klucz === 'pracownik' && $record->pracownik_id === $user->id;
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('Usuń zaznaczone'),
                 ]),
             ]);
     }
@@ -224,7 +294,7 @@ class WypozyczenieResource extends Resource
     {
         return [
             'index' => Pages\ListWypozyczenies::route('/'),
-            'create' => Pages\CreateWypozyczenie::route('/create'),
+            'view' => Pages\ViewWypozyczenie::route('/{record}'),
             'edit' => Pages\EditWypozyczenie::route('/{record}/edit'),
         ];
     }

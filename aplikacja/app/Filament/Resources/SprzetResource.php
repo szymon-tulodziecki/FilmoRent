@@ -26,6 +26,33 @@ class SprzetResource extends Resource
     protected static ?string $pluralModelLabel = 'Sprzęt';
     
     protected static ?string $navigationGroup = 'Magazyn';
+    
+    protected static ?string $slug = 'sprzet';
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Sprzęt';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'Sprzęt';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Sprzęt';
+    }
+
+    public static function getCreateLabel(): string
+    {
+        return 'Dodaj Sprzęt';
+    }
+
+    public static function getEditLabel(): string
+    {
+        return 'Edytuj Sprzęt';
+    }
 
     public static function form(Form $form): Form
     {
@@ -90,6 +117,13 @@ class SprzetResource extends Resource
                             ->rows(4)
                             ->columnSpanFull()
                             ->placeholder('Profesjonalny sprzęt filmowy, specyfikacja techniczna...'),
+                        Forms\Components\TextInput::make('url_zdjecia')
+                            ->label('URL zdjęcia produktu')
+                            ->url()
+                            ->maxLength(500)
+                            ->placeholder('https://example.com/zdjecie.jpg')
+                            ->helperText('Zostaw puste - system automatycznie wygeneruje zdjęcie z Unsplash')
+                            ->columnSpanFull(),
                     ]),
                     
                 Forms\Components\Section::make('Wycena i status')
@@ -179,12 +213,12 @@ class SprzetResource extends Resource
                     ->label('Kategoria'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()->label('Podgląd'),
+                Tables\Actions\EditAction::make()->label('Edytuj'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('Usuń zaznaczone'),
                 ]),
             ]);
     }

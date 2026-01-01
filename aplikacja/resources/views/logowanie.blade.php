@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="pl">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    @include('components.styles')
     <style>
         body { font-family: 'Manrope', sans-serif; }
         .btn-primary { background: #f59e0b; color: #000; transition: all 0.3s; }
@@ -16,25 +17,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 antialiased">
 
-    <!-- Navigation -->
-    <nav class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="/" class="flex-shrink-0">
-                        <i data-lucide="camera" class="w-8 h-8 text-amber-500"></i>
-                    </a>
-                </div>
-                <div class="flex items-center space-x-8">
-                    <a href="/" class="text-slate-300 hover:text-amber-500 transition duration-150 text-sm font-medium">Strona główna</a>
-                    <a href="/sklep" class="text-slate-300 hover:text-amber-500 transition duration-150 text-sm font-medium">Sklep</a>
-                    <a href="/o-nas" class="text-slate-300 hover:text-amber-500 transition duration-150 text-sm font-medium">O nas</a>
-                    <a href="/koszyk" class="text-slate-300 hover:text-amber-500 transition duration-150 text-sm font-medium">Koszyk</a>
-                    <a href="/logowanie" class="text-amber-500 border-b-2 border-amber-500 transition duration-150 text-sm font-medium">Logowanie</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    @include('components.navbar')
 
     <!-- Login Section -->
     <section class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -47,7 +30,18 @@
                 <p class="text-slate-400">Dostęp do swojego konta i historii wypożyczeń</p>
             </div>
 
-            <form class="mt-8 space-y-6" action="#" method="POST">
+            <form class="mt-8 space-y-6" action="{{ route('logowanie.store') }}" method="POST">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                @if($errors->any())
+                    <div class="p-3 rounded-lg border border-red-500/60 bg-red-500/10 text-sm text-red-200">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
+                @if(session('success'))
+                    <div class="p-3 rounded-lg border border-green-500/60 bg-green-500/10 text-sm text-green-200">
+                        {{ session('success') }}
+                    </div>
+                @endif
                 <div class="space-y-4">
                     <div>
                         <label for="email" class="block text-sm font-medium text-slate-300 mb-2">
@@ -104,11 +98,7 @@
                         </label>
                     </div>
 
-                    <div class="text-sm">
-                        <a href="#" class="text-amber-400 hover:text-amber-300 transition">
-                            Zapomniałeś hasła?
-                        </a>
-                    </div>
+                    <div class="text-sm text-slate-500">&nbsp;</div>
                 </div>
 
                 <div>
@@ -123,7 +113,7 @@
                 <div class="text-center">
                     <p class="text-slate-400">
                         Nie masz jeszcze konta?
-                        <a href="#" class="text-amber-400 hover:text-amber-300 font-medium transition">
+                        <a href="{{ route('rejestracja') }}" class="text-amber-400 hover:text-amber-300 font-medium transition">
                             Zarejestruj się
                         </a>
                     </p>

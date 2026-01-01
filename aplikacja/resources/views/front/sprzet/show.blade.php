@@ -59,7 +59,7 @@
 
                     @auth
                         <form action="{{ route('rezerwacja.store') }}" method="POST">
-                            @csrf
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="sprzet_id" value="{{ $sprzet->id }}">
                             
                             <div class="grid grid-cols-2 gap-4 mb-4">
@@ -83,7 +83,7 @@
                     @else
                         <div class="text-center p-4 bg-gray-100 rounded border border-gray-300">
                             <p class="mb-2 text-gray-700">Zaloguj się, aby dokonać rezerwacji.</p>
-                            <a href="{{ route('login') }}" class="text-blue-700 font-bold hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded p-1">Przejdź do logowania</a>
+                            <a href="{{ route('logowanie') }}" class="text-blue-700 font-bold hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded p-1">Przejdź do logowania</a>
                         </div>
                     @endauth
                 </div>

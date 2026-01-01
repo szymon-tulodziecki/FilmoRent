@@ -20,6 +20,8 @@ class Uzytkownik extends Authenticatable implements FilamentUser
 
     protected $fillable = [
         'rola_id', 'imie', 'nazwisko', 'email', 'haslo', 'telefon',
+        'typ_klienta', 'pesel', 'nazwa_firmy', 'nip', 'regon',
+        'osoba_kontaktowa', 'stanowisko', 'notatki_crm', 'status_klienta',
     ];
 
     protected $hidden = ['haslo', 'remember_token'];
