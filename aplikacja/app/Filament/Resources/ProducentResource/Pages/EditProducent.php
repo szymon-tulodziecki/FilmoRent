@@ -13,7 +13,12 @@ class EditProducent extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()->label('Usuń'),
         ];
+    }
+
+    public function getTitle(): string
+    {
+        return 'Edytuj producenta';
     }
 }

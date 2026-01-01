@@ -26,6 +26,33 @@ class ProducentResource extends Resource
     protected static ?string $pluralModelLabel = 'Producenci';
     
     protected static ?string $navigationGroup = 'Magazyn';
+    
+    protected static ?string $slug = 'producenci';
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Producenci';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'Producent';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Producenci';
+    }
+
+    public static function getCreateLabel(): string
+    {
+        return 'Dodaj Producenta';
+    }
+
+    public static function getEditLabel(): string
+    {
+        return 'Edytuj Producenta';
+    }
 
     public static function form(Form $form): Form
     {
@@ -53,11 +80,11 @@ class ProducentResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('Edytuj'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('Usuń zaznaczone'),
                 ]),
             ]);
     }

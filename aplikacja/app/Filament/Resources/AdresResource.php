@@ -21,6 +21,18 @@ class AdresResource extends Resource
     
     // Ukryj z głównego menu - adresy są zarządzane przez RelationManager w Użytkownikach
     protected static bool $shouldRegisterNavigation = false;
+    
+    protected static ?string $slug = 'adresy';
+
+    public static function getCreateLabel(): string
+    {
+        return 'Dodaj Adres';
+    }
+
+    public static function getEditLabel(): string
+    {
+        return 'Edytuj Adres';
+    }
 
     public static function form(Form $form): Form
     {

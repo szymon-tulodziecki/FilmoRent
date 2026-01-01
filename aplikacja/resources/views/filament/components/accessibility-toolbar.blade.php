@@ -3,14 +3,17 @@
     x-data="{
         fontSize: 100,
         highContrast: false,
+        dyslexiaFont: false,
         
         init() {
             // Odczytaj z localStorage
             const savedFontSize = localStorage.getItem('accessibility-font-size');
             const savedContrast = localStorage.getItem('accessibility-high-contrast');
+            const savedDyslexia = localStorage.getItem('accessibility-dyslexia-font');
             
             if (savedFontSize) this.fontSize = parseInt(savedFontSize);
             if (savedContrast) this.highContrast = savedContrast === 'true';
+            if (savedDyslexia) this.dyslexiaFont = savedDyslexia === 'true';
             
             this.applySettings();
             this.$watch('fontSize', (val) => {
@@ -19,6 +22,10 @@
             });
             this.$watch('highContrast', (val) => {
                 localStorage.setItem('accessibility-high-contrast', val);
+                this.applySettings();
+            });
+            this.$watch('dyslexiaFont', (val) => {
+                localStorage.setItem('accessibility-dyslexia-font', val);
                 this.applySettings();
             });
         },
@@ -30,6 +37,12 @@
                 document.documentElement.classList.add('high-contrast');
             } else {
                 document.documentElement.classList.remove('high-contrast');
+            }
+            
+            if (this.dyslexiaFont) {
+                document.documentElement.classList.add('dyslexia-font');
+            } else {
+                document.documentElement.classList.remove('dyslexia-font');
             }
         }
     }"
@@ -88,6 +101,19 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
         </svg>
         <span x-text="highContrast ? 'Kontrast: WŁ' : 'Kontrast'"></span>
+    </button>
+    
+    <!-- Czcionka dla dyslektyków -->
+    <button 
+        type="button"
+        @click="dyslexiaFont = !dyslexiaFont"
+        :class="dyslexiaFont ? 'bg-blue-500 text-white ring-2 ring-blue-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'"
+        class="flex items-center justify-center w-8 h-8 rounded-lg transition-colors font-bold text-sm"
+        :title="dyslexiaFont ? 'Wyłącz czcionkę dla dyslektyków' : 'Włącz czcionkę dla dyslektyków'"
+        role="switch"
+        :aria-checked="dyslexiaFont.toString()"
+        aria-label="Czcionka dla dyslektyków">
+        D
     </button>
 </div>
 
@@ -160,5 +186,13 @@ html.high-contrast button[type="submit"]:hover {
 html.high-contrast table th,
 html.high-contrast table td {
     border: 1px solid #000 !important;
+}
+
+/* Czcionka dla dyslektyków - WCAG */
+html.dyslexia-font,
+html.dyslexia-font * {
+    font-family: 'Comic Sans MS', 'OpenDyslexic', cursive !important;
+    letter-spacing: 0.1em !important;
+    line-height: 1.8 !important;
 }
 </style>

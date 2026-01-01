@@ -1,5 +1,4 @@
-// FilmoRent - Schemat bazy danych
-// Docs: https://dbml.dbdiagram.io/docs
+// FilmoRent - Schemat bazy danych (POPRAWIONY)
 // System wypożyczalni sprzętu filmowego i fotograficznego
 
 // ==========================================
@@ -15,11 +14,19 @@ Table role {
 Table uzytkownicy {
   id bigint [primary key, increment]
   rola_id bigint [not null, ref: > role.id]
-  imie varchar(100) [not null]
-  nazwisko varchar(100) [not null]
+  imie varchar(100) [null, note: 'Opcjonalnie przy rejestracji']
+  nazwisko varchar(100) [null, note: 'Opcjonalnie przy rejestracji']
   email varchar(255) [unique, not null]
   haslo varchar(255) [not null, note: 'Hash hasła (Bcrypt/Argon2)']
   telefon varchar(20)
+  typ_klienta enum('indywidualny', 'biznesowy') [default: 'indywidualny']
+  status_klienta enum('aktywny', 'wstrzymany', 'zablokowany') [default: 'aktywny']
+  pesel varchar(11) [null, note: 'Tylko dla klientów indywidualnych']
+  nazwa_firmy varchar(255) [null, note: 'Tylko dla klientów biznesowych']
+  nip varchar(10) [null, note: 'Numer identyfikacji podatkowej']
+  regon varchar(14) [null, note: 'Rejestr Gospodarki Narodowej']
+  osoba_kontaktowa varchar(255) [null, note: 'Imię i nazwisko osoby do kontaktu']
+  stanowisko varchar(100) [null]
   zweryfikowany_email_data timestamp
   remember_token varchar(100)
   utworzono_data timestamp [default: `now()`]
@@ -28,6 +35,8 @@ Table uzytkownicy {
   indexes {
     email
     rola_id
+    typ_klienta
+    status_klienta
   }
 }
 
@@ -38,6 +47,8 @@ Table adresy {
   miasto varchar(100) [not null]
   kod_pocztowy varchar(20) [not null, note: 'Format XX-XXX']
   typ enum('rozliczeniowy', 'dostawy') [not null]
+  utworzono_data timestamp [default: `now()`]
+  zaktualizowano_data timestamp
 
   indexes {
     uzytkownik_id
@@ -53,6 +64,9 @@ Table kategorie {
   nazwa varchar(100) [not null, note: 'np. Kamery Cyfrowe, Obiektywy']
   slug varchar(100) [unique, not null, note: 'Przyjazny URL (kamery-cyfrowe)']
   rodzic_id bigint [ref: > kategorie.id, note: 'Relacja zwrotna - drzewo kategorii']
+  slowa_kluczowe text [null, note: 'Słowa kluczowe dla wyszukiwania (oddzielone przecinkami)']
+  utworzono_data timestamp [default: `now()`]
+  zaktualizowano_data timestamp
 
   indexes {
     rodzic_id
@@ -63,6 +77,8 @@ Table producenci {
   id bigint [primary key, increment]
   nazwa varchar(100) [not null, note: 'Sony, Canon, Blackmagic Design']
   opis text
+  utworzono_data timestamp [default: `now()`]
+  zaktualizowano_data timestamp
 }
 
 Table sprzet {
@@ -72,10 +88,12 @@ Table sprzet {
   nazwa varchar(255) [not null, note: 'np. Sony Alpha a7S III Body']
   numer_seryjny varchar(100) [unique, not null, note: 'Krytyczne dla ubezpieczyciela']
   opis text
-  cena_doba decimal(10,2) [not null, note: 'Stawka netto za 24h']
+  cena_za_dzien decimal(10,2) [not null, note: 'Stawka netto za 24h']
+  cena_doba decimal(10,2) [note: 'Alternatywna nazwa pola']
   kaucja decimal(10,2) [not null, note: 'Zabezpieczenie przy wydaniu']
   wartosc_rynkowa decimal(10,2) [not null, note: 'Wartość odtworzeniowa']
-  status_sprzetu enum('dostepny', 'w_serwisie', 'wycofany', 'zaginiony') [default: 'dostepny']
+  status_sprzetu enum('dostepny', 'w_serwisie', 'wycofany', 'zaginiony') [default: 'dostepny', note: 'Status dostępności']
+  url_zdjecia varchar(500) [null, note: 'URL zdjęcia lub link do obrazu']
   utworzono_data timestamp [default: `now()`]
   zaktualizowano_data timestamp
 
@@ -93,23 +111,25 @@ Table sprzet {
 
 Table statusy_wypozyczenia {
   id bigint [primary key, increment]
-  nazwa varchar(50) [not null, note: 'np. Oczekuje, Wydane, Zwrócone']
-  klucz varchar(50) [unique, not null, note: 'Identyfikator do kodu']
+  nazwa varchar(100) [not null, note: 'Oczekuje na potwierdzenie, W realizacji, Wydane, Wysłane, Zwrócone, Zrealizowane, Anulowane']
+  klucz varchar(50) [unique, not null, note: 'Identyfikator do kodu (oczekuje, wRealizacji, itd.)']
   kolor varchar(20) [note: 'Kolor do wyświetlania w UI']
+  utworzono_data timestamp [default: `now()`]
 }
 
 Table wypozyczenia {
   id bigint [primary key, increment]
-  numer_zamowienia varchar(50) [unique, not null, note: 'np. RENT/2025/01/0001']
-  uzytkownik_id bigint [not null, ref: > uzytkownicy.id, note: 'Klient']
-  pracownik_id bigint [ref: > uzytkownicy.id, note: 'Kto wydał sprzęt']
+  numer_zamowienia varchar(50) [unique, not null, note: 'np. ZAM-20260101152654-8']
+  uzytkownik_id bigint [not null, ref: > uzytkownicy.id, note: 'Klient - użytkownik zamawiający']
+  pracownik_id bigint [null, ref: > uzytkownicy.id, note: 'Pracownik obsługujący zamówienie']
   status_id bigint [not null, ref: > statusy_wypozyczenia.id]
-  data_rezerwacji datetime [not null]
-  data_odbioru datetime [not null, note: 'Planowany początek najmu']
-  data_zwrotu datetime [not null, note: 'Planowany koniec najmu']
-  faktyczna_data_zwrotu datetime [note: 'Do naliczania kar za opóźnienie']
-  suma_calkowita decimal(10,2) [not null]
-  uwagi text
+  data_rezerwacji datetime [not null, note: 'Data złożenia zamówienia']
+  data_odbioru datetime [not null, note: 'Planowany początek wypożyczenia']
+  data_zwrotu datetime [not null, note: 'Planowana data zwrotu']
+  faktyczna_data_zwrotu datetime [null, note: 'Rzeczywista data zwrotu - do naliczania kar']
+  suma_calkowita decimal(10,2) [not null, note: 'Łączna kwota wypożyczenia']
+  kaucja decimal(10,2) [null, note: 'Suma kaucji za sprzęt']
+  uwagi text [null]
   utworzono_data timestamp [default: `now()`]
   zaktualizowano_data timestamp
 
@@ -126,8 +146,9 @@ Table elementy_wypozyczenia {
   id bigint [primary key, increment]
   wypozyczenie_id bigint [not null, ref: > wypozyczenia.id]
   sprzet_id bigint [not null, ref: > sprzet.id]
-  cena_netto_snapshot decimal(10,2) [not null, note: 'Cena w momencie wypożyczenia']
-  rabat_procent int [default: 0]
+  cena_netto_snapshot decimal(10,2) [not null, note: 'Cena w momencie wypożyczenia - snapshot']
+  rabat_procent int [default: 0, note: 'Procent rabatu (jeśli zastosowany)']
+  utworzono_data timestamp [default: `now()`]
 
   indexes {
     wypozyczenie_id
@@ -147,8 +168,9 @@ Table platnosci {
   typ enum('zaliczka', 'oplata_koncowa', 'kaucja', 'zwrot_kaucji', 'kara') [not null]
   metoda enum('przelew', 'gotowka', 'karta', 'blik') [not null]
   status enum('oczekujaca', 'zrealizowana', 'odrzucona') [not null]
-  zewnetrzne_id varchar(255) [note: 'ID transakcji z PayU/Stripe']
+  zewnetrzne_id varchar(255) [null, note: 'ID transakcji z PayU/Stripe/inny system']
   utworzono_data timestamp [default: `now()`]
+  zaktualizowano_data timestamp
 
   indexes {
     wypozyczenie_id
@@ -160,9 +182,9 @@ Table zalaczniki {
   id bigint [primary key, increment]
   sciezka varchar(255) [not null, note: 'Ścieżka w storage']
   nazwa_oryginalna varchar(255) [not null]
-  typ_mime varchar(50) [not null, note: 'image/jpeg, application/pdf']
-  opis_alternatywny varchar(255) [note: 'Alt text dla WCAG']
-  model_type varchar(255) [not null, note: 'Polimorfizm: App\\Models\\Sprzet lub Wypozyczenie']
+  typ_mime varchar(50) [not null, note: 'image/jpeg, application/pdf, itd.']
+  opis_alternatywny varchar(255) [null, note: 'Alt text dla WCAG']
+  model_type varchar(255) [not null, note: 'Polimorfizm: App\\Models\\Sprzet, Wypozyczenie']
   model_id bigint [not null]
   utworzono_data timestamp [default: `now()`]
 
@@ -171,9 +193,24 @@ Table zalaczniki {
   }
 }
 
-// ==========================================
-// Relacje polimorficzne (załączniki)
-// ==========================================
-// Załączniki mogą być podpięte do:
-// - sprzet (zdjęcia sprzętu)
-// - wypozyczenia (skany umów, protokoły zdawczo-odbiorcze)
+Table wiadomosci_kontaktowe {
+  id bigint [primary key, increment]
+  imie_nazwisko varchar(255) [not null]
+  email varchar(255) [not null]
+  temat varchar(255) [not null]
+  wiadomosc text [not null]
+  status enum('nowa', 'przeczytana', 'odpowiedziana') [default: 'nowa']
+  utworzono_data timestamp [default: `now()`]
+  zaktualizowano_data timestamp
+
+  indexes {
+    email
+    status
+  }
+}
+
+Table cache {
+  key varchar(255) [primary key]
+  value longtext [not null]
+  expiration int [not null, note: 'Unix timestamp wygaśnięcia']
+}

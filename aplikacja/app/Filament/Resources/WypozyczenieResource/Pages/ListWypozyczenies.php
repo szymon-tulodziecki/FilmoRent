@@ -13,7 +13,7 @@ class ListWypozyczenies extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            // Wypożyczenia są tworzone automatycznie przez klientów z koszyka
         ];
     }
 }
