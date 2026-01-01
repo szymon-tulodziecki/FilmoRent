@@ -48,22 +48,6 @@ Aplikacja zawiera **minimum 5 testów jednostkowych** weryfikujących poprawnoś
 - **Kontrola wersji:** Git
 - **Testy:** PHPUnit
 
-## 🔐 Dane Logowania
-
-System zawiera 3 predefiniowane konta użytkowników:
-
-| Rola | Email | Hasło | Uprawnienia |
-|------|-------|-------|-------------|
-| **Administrator** | admin@filmorent.pl | `Admin123!` | Pełny dostęp |
-| **Pracownik** | pracownik@filmorent.pl | `Pracownik123!` | Zarządzanie wypożyczeniami |
-| **Klient** | klient@filmorent.pl | `Klient123!` | Rezerwacje i wypożyczenia |
-
-👉 **Szczegóły:** [DANE_LOGOWANIA.md](DANE_LOGOWANIA.md)
-
-## 📋 Instalacja
-
-Zobacz szczegółową instrukcję w pliku [INSTALACJA.md](INSTALACJA.md)
-
 ```bash
 cd aplikacja
 composer install
