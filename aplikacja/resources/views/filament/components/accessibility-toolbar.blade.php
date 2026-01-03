@@ -1,6 +1,6 @@
 <!-- Toolbar dostępności w górnym pasku - tylko rozmiar czcionki i wysoki kontrast -->
 <div 
-    data-x-data="{
+    x-data="{
         fontSize: 100,
         highContrast: false,
         dyslexiaFont: false,
@@ -51,8 +51,8 @@
     <!-- Zmniejsz czcionkę -->
     <button 
         type="button"
-        data-x-on-click="fontSize = Math.max(80, fontSize - 10)"
-        data-x-bind-disabled="fontSize <= 80"
+        @click="fontSize = Math.max(80, fontSize - 10)"
+        :disabled="fontSize <= 80"
         class="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         title="Zmniejsz czcionkę (WCAG)"
         aria-label="Zmniejsz rozmiar tekstu">
@@ -60,13 +60,13 @@
     </button>
     
     <!-- Rozmiar czcionki -->
-    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 w-10 text-center" data-x-text="fontSize + '%'"></span>
+    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 w-10 text-center" x-text="fontSize + '%'"></span>
     
     <!-- Zwiększ czcionkę -->
     <button 
         type="button"
-        data-x-on-click="fontSize = Math.min(200, fontSize + 10)"
-        data-x-bind-disabled="fontSize >= 200"
+        @click="fontSize = Math.min(200, fontSize + 10)"
+        :disabled="fontSize >= 200"
         class="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         title="Zwiększ czcionkę (WCAG)"
         aria-label="Zwiększ rozmiar tekstu">
@@ -76,7 +76,7 @@
     <!-- Reset czcionki -->
     <button 
         type="button"
-        data-x-on-click="fontSize = 100"
+        @click="fontSize = 100"
         class="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 transition-colors"
         title="Resetuj rozmiar czcionki"
         aria-label="Resetuj rozmiar tekstu do 100%">
@@ -90,30 +90,30 @@
     <!-- Wysoki kontrast -->
     <button 
         type="button"
-        data-x-on-click="highContrast = !highContrast"
-        data-x-bind-class="highContrast ? 'bg-yellow-400 text-black ring-2 ring-black' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'"
+        @click="highContrast = !highContrast"
+        :class="highContrast ? 'bg-yellow-400 text-black ring-2 ring-black' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'"
         class="flex items-center justify-center px-3 h-8 rounded-lg transition-colors font-medium text-xs"
-        data-x-bind-title="highContrast ? 'Wyłącz wysoki kontrast' : 'Włącz wysoki kontrast (WCAG)'"
+        :title="highContrast ? 'Wyłącz wysoki kontrast' : 'Włącz wysoki kontrast (WCAG)'"
         role="switch"
         aria-checked="false"
-        data-x-bind-aria-checked="highContrast.toString()"
+        :aria-checked="highContrast.toString()"
         aria-label="Wysoki kontrast">
         <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
         </svg>
-        <span data-x-text="highContrast ? 'Kontrast: WŁ' : 'Kontrast'"></span>
+        <span x-text="highContrast ? 'Kontrast: WŁ' : 'Kontrast'"></span>
     </button>
     
     <!-- Czcionka dla dyslektyków -->
     <button 
         type="button"
-        data-x-on-click="dyslexiaFont = !dyslexiaFont"
-        data-x-bind-class="dyslexiaFont ? 'bg-blue-500 text-white ring-2 ring-blue-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'"
+        @click="dyslexiaFont = !dyslexiaFont"
+        :class="dyslexiaFont ? 'bg-blue-500 text-white ring-2 ring-blue-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'"
         class="flex items-center justify-center w-8 h-8 rounded-lg transition-colors font-bold text-sm"
-        data-x-bind-title="dyslexiaFont ? 'Wyłącz czcionkę dla dyslektyków' : 'Włącz czcionkę dla dyslektyków'"
+        :title="dyslexiaFont ? 'Wyłącz czcionkę dla dyslektyków' : 'Włącz czcionkę dla dyslektyków'"
         role="switch"
         aria-checked="false"
-        data-x-bind-aria-checked="dyslexiaFont.toString()"
+        :aria-checked="dyslexiaFont.toString()"
         aria-label="Czcionka dla dyslektyków">
         D
     </button>
