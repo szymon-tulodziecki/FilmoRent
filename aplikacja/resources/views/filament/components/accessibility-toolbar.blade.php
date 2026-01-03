@@ -95,6 +95,7 @@
         class="flex items-center justify-center px-3 h-8 rounded-lg transition-colors font-medium text-xs"
         :title="highContrast ? 'Wyłącz wysoki kontrast' : 'Włącz wysoki kontrast (WCAG)'"
         role="switch"
+        aria-checked="false"
         :aria-checked="highContrast.toString()"
         aria-label="Wysoki kontrast">
         <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -111,6 +112,7 @@
         class="flex items-center justify-center w-8 h-8 rounded-lg transition-colors font-bold text-sm"
         :title="dyslexiaFont ? 'Wyłącz czcionkę dla dyslektyków' : 'Włącz czcionkę dla dyslektyków'"
         role="switch"
+        aria-checked="false"
         :aria-checked="dyslexiaFont.toString()"
         aria-label="Czcionka dla dyslektyków">
         D

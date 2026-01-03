@@ -125,7 +125,7 @@
                     </div>
                 </div>
 
-                <div class="lg:col-span-5" x-data="rezerwacja({{ $sprzet->cena_doba }})">
+                <div class="lg:col-span-5" data-x-data="rezerwacja({{ $sprzet->cena_doba }})">
                     <div class="sticky top-24 space-y-6">
                         
                         <div>
@@ -150,14 +150,14 @@
                                 <form action="{{ route('koszyk.dodaj') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="sprzet_id" value="{{ $sprzet->id }}">
-                                    <input type="hidden" name="data_od" x-model="startFormatted">
-                                    <input type="hidden" name="data_do" x-model="endFormatted">
+                                    <input type="hidden" name="data_od" data-x-model="startFormatted">
+                                    <input type="hidden" name="data_do" data-x-model="endFormatted">
 
                                     <div class="space-y-4">
                                         <div>
                                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Wybierz termin</label>
                                             <div class="relative">
-                                                <input x-ref="datepicker" type="text" 
+                                                <input data-x-ref="datepicker" type="text" 
                                                     class="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none cursor-pointer font-medium" 
                                                     placeholder="Wybierz zakres dat..." readonly>
                                                 <div class="absolute right-4 top-3.5 text-slate-500 pointer-events-none">
@@ -166,10 +166,10 @@
                                             </div>
                                         </div>
 
-                                        <div x-show="days > 0" x-transition class="bg-slate-950/70 rounded-xl p-4 border border-slate-700 space-y-2">
+                                        <div data-x-show="days > 0" data-x-transition class="bg-slate-950/70 rounded-xl p-4 border border-slate-700 space-y-2">
                                             <div class="flex justify-between text-sm">
                                                 <span class="text-slate-400">Liczba dni</span>
-                                                <span class="text-white font-bold" x-text="days"></span>
+                                                <span class="text-white font-bold" data-x-text="days"></span>
                                             </div>
                                             <div class="flex justify-between text-sm">
                                                 <span class="text-slate-400">Cena za dobę</span>
@@ -177,16 +177,16 @@
                                             </div>
                                             <div class="pt-2 mt-2 border-t border-slate-800 flex justify-between items-center">
                                                 <span class="text-slate-300 font-bold">Suma</span>
-                                                <span class="text-amber-500 text-xl font-black" x-text="totalCost + ' zł'"></span>
+                                                <span class="text-amber-500 text-xl font-black" data-x-text="totalCost + ' zł'"></span>
                                             </div>
                                         </div>
 
                                         <button type="submit" 
-                                            :disabled="days === 0"
-                                            :class="days > 0 ? 'bg-amber-500 hover:bg-amber-400 text-slate-900' : 'bg-slate-800 text-slate-500 cursor-not-allowed'"
+                                            data-x-bind-disabled="days === 0"
+                                            data-x-bind-class="days > 0 ? 'bg-amber-500 hover:bg-amber-400 text-slate-900' : 'bg-slate-800 text-slate-500 cursor-not-allowed'"
                                             class="w-full py-4 rounded-xl font-bold transition-all duration-200 shadow-lg flex items-center justify-center gap-2 group">
                                             <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                                            <span x-text="days > 0 ? 'Dodaj do rezerwacji' : 'Wybierz daty'"></span>
+                                            <span data-x-text="days > 0 ? 'Dodaj do rezerwacji' : 'Wybierz daty'"></span>
                                         </button>
                                         
                                         <p class="text-xs text-center text-slate-500 mt-2">

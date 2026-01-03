@@ -138,6 +138,7 @@
                             :class="highContrast ? 'bg-primary-600 hover:bg-primary-700' : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600'"
                             class="w-full fi-btn relative grid-flow-col items-center justify-center font-semibold outline-none transition duration-75 focus-visible:ring-2 rounded-lg fi-size-md gap-1.5 px-4 py-3 text-sm inline-grid shadow-sm text-white ring-1 ring-gray-950/10 dark:ring-white/20"
                             role="switch"
+                            aria-checked="false"
                             :aria-checked="highContrast.toString()">
                             <template x-if="highContrast">
                                 <div class="flex items-center gap-2">
@@ -172,6 +173,7 @@
                             :class="darkMode ? 'bg-gray-800 hover:bg-gray-900' : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600'"
                             class="w-full fi-btn relative grid-flow-col items-center justify-center font-semibold outline-none transition duration-75 focus-visible:ring-2 rounded-lg fi-size-md gap-1.5 px-4 py-3 text-sm inline-grid shadow-sm text-white ring-1 ring-gray-950/10 dark:ring-white/20"
                             role="switch"
+                            aria-checked="false"
                             :aria-checked="darkMode.toString()">
                             <template x-if="darkMode">
                                 <div class="flex items-center gap-2">
