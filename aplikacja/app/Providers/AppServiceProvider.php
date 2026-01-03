@@ -21,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Fix CSRF token HTML validation: hidden input fields should not have autocomplete attribute
+        Blade::directive('csrf', function () {
+            return "<?php echo '<input type=\"hidden\" name=\"_token\" value=\"' . csrf_token() . '\">'; ?>";
+        });
+
         // Przyciski dostępności w górnym pasku (po zalogowaniu)
         FilamentView::registerRenderHook(
             'panels::global-search.after',
