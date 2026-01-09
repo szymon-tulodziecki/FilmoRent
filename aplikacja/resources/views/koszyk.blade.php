@@ -208,6 +208,9 @@
             const dataOd = document.getElementById(`data_od_${index}`).value;
             const dataDo = document.getElementById(`data_do_${index}`).value;
 
+            console.log('Update date for index:', index);
+            console.log('Data od:', dataOd, 'Data do:', dataDo);
+
             if (!dataOd || !dataDo) {
                 alert('Uzupełnij obie daty');
                 return;
@@ -220,6 +223,8 @@
                 alert('Data "Od" musi być wcześniejsza niż data "Do"');
                 return;
             }
+
+            console.log('Sending request to update dates...');
 
             // Wyślij AJAX request do aktualizacji dat w koszyku
             fetch('{{ route("koszyk.aktualizuj") }}', {
@@ -234,8 +239,12 @@
                     data_do: dataDo
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Response data:', data);
                 if (data.success) {
                     // Przeładuj stronę aby wyświetlić nowe ceny
                     location.reload();

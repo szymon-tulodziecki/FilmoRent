@@ -209,19 +209,31 @@ class SklepController extends Controller
         $dataOd = Carbon::parse($request->data_od);
         $dataDo = Carbon::parse($request->data_do);
         
-        $konflikty = Wypozyczenie::where('sprzet_id', $sprzet->id)
+        $konflikty = Wypozyczenie::whereHas('sprzety', function($query) use ($sprzet) {
+                $query->where('sprzet_id', $sprzet->id);
+            })
             ->whereIn('status_id', function($query) {
                 $query->select('id')
                     ->from('statusy_wypozyczenia')
-                    ->whereIn('nazwa', ['oczekujace', 'aktywne']);
+                    ->whereIn('klucz', ['oczekuje', 'wRealizacji', 'wysylka', 'wydane']);
             })
             ->where(function($query) use ($dataOd, $dataDo) {
-                $query->whereBetween('data_od', [$dataOd, $dataDo])
-                    ->orWhereBetween('data_do', [$dataOd, $dataDo])
-                    ->orWhere(function($q) use ($dataOd, $dataDo) {
-                        $q->where('data_od', '<=', $dataOd)
-                          ->where('data_do', '>=', $dataDo);
-                    });
+                // Konflikt występuje gdy:
+                // 1. Nowy okres rozpoczyna się w trakcie istniejącego wypożyczenia
+                // 2. Nowy okres kończy się w trakcie istniejącego wypożyczenia  
+                // 3. Nowy okres całkowicie obejmuje istniejące wypożyczenie
+                $query->where(function($subQ) use ($dataOd, $dataDo) {
+                    $subQ->where('data_odbioru', '<=', $dataOd)
+                         ->where('data_zwrotu', '>=', $dataOd);
+                })
+                ->orWhere(function($subQ) use ($dataOd, $dataDo) {
+                    $subQ->where('data_odbioru', '<=', $dataDo)
+                         ->where('data_zwrotu', '>=', $dataDo);
+                })
+                ->orWhere(function($subQ) use ($dataOd, $dataDo) {
+                    $subQ->where('data_odbioru', '>=', $dataOd)
+                         ->where('data_zwrotu', '<=', $dataDo);
+                });
             })
             ->exists();
         
@@ -296,12 +308,22 @@ class SklepController extends Controller
             $query->where('sprzet_id', $sprzet->id);
         })
         ->where(function ($q) use ($dataOd, $dataDo) {
-            $q->whereBetween('data_odbioru', [$dataOd, $dataDo])
-              ->orWhereBetween('data_zwrotu', [$dataOd, $dataDo])
-              ->orWhere(function ($subQ) use ($dataOd, $dataDo) {
-                  $subQ->where('data_odbioru', '<=', $dataOd)
-                       ->where('data_zwrotu', '>=', $dataDo);
-              });
+            // Konflikt występuje gdy:
+            // 1. Nowy okres rozpoczyna się w trakcie istniejącego wypożyczenia
+            // 2. Nowy okres kończy się w trakcie istniejącego wypożyczenia  
+            // 3. Nowy okres całkowicie obejmuje istniejące wypożyczenie
+            $q->where(function($subQ) use ($dataOd, $dataDo) {
+                $subQ->where('data_odbioru', '<=', $dataOd)
+                     ->where('data_zwrotu', '>=', $dataOd);
+            })
+            ->orWhere(function($subQ) use ($dataOd, $dataDo) {
+                $subQ->where('data_odbioru', '<=', $dataDo)
+                     ->where('data_zwrotu', '>=', $dataDo);
+            })
+            ->orWhere(function($subQ) use ($dataOd, $dataDo) {
+                $subQ->where('data_odbioru', '>=', $dataOd)
+                     ->where('data_zwrotu', '<=', $dataDo);
+            });
         })
         ->whereIn('status_id', function ($query) {
             $query->select('id')

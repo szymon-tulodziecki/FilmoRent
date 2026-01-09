@@ -35,7 +35,7 @@ Route::get('/', function () {
 		->get();
 	$platnosci = Platnosc::latest('utworzono_data')->take(4)->get();
 	$adresy = Adres::with('uzytkownik')->latest('uzytkownik_id')->take(4)->get();
-	$zalaczniki = Zalacznik::latest('utworzono')->take(3)->get();
+	$zalaczniki = Zalacznik::latest('utworzono_data')->take(3)->get();
 	$statystyki = [
 		'sprzet' => Sprzet::count(),
 		'dostepny' => Sprzet::where('status_sprzetu', 'dostepny')->count(),
