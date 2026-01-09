@@ -165,29 +165,6 @@ class SklepController extends Controller
 
     public function dodajDoKoszyka(Request $request)
     {
-        // Sprawdź czy użytkownik jest zalogowany
-        if (!auth()->check()) {
-            return redirect()->route('logowanie')->with('error', 'Zaloguj się, aby dodać sprzęt do koszyka.');
-        }
-
-        $user = auth()->user();
-
-        // Sprawdź czy dane profilu są wypełnione
-        if (!$user->imie || !$user->nazwisko) {
-            return redirect()->route('konto')->with('error', 'Uzupełnij najpierw swoje imię i nazwisko w ustawieniach konta.');
-        }
-
-        // Walidacja danych w zależności od typu klienta
-        if ($user->typ_klienta === 'indywidualny') {
-            if (!$user->pesel) {
-                return redirect()->route('konto')->with('error', 'Uzupełnij PESEL w ustawieniach konta (Dane osobowe).');
-            }
-        } elseif ($user->typ_klienta === 'biznesowy') {
-            if (!$user->nazwa_firmy || !$user->nip) {
-                return redirect()->route('konto')->with('error', 'Uzupełnij dane firmy (Nazwa firmy i NIP) w ustawieniach konta.');
-            }
-        }
-
         // Obsługa dodawania zestawów (sprzet_ids) bez wymagania dat
         if ($request->filled('sprzet_ids')) {
             $sprzet_ids = explode(',', $request->input('sprzet_ids'));
@@ -377,6 +354,28 @@ class SklepController extends Controller
         }
 
         $user = auth()->user();
+
+        // Sprawdź czy dane profilu są wypełnione
+        if (empty($user->imie) || empty($user->nazwisko)) {
+            return redirect()->route('konto')->with('error', 'Uzupełnij najpierw swoje imię i nazwisko w ustawieniach konta.');
+        }
+
+        // Sprawdź czy typ klienta jest wybrany
+        if (empty($user->typ_klienta)) {
+            return redirect()->route('konto')->with('error', 'Wybierz typ klienta (indywidualny lub biznesowy) w ustawieniach konta.');
+        }
+
+        // Walidacja danych w zależności od typu klienta
+        if ($user->typ_klienta === 'indywidualny') {
+            if (empty($user->pesel)) {
+                return redirect()->route('konto')->with('error', 'Uzupełnij PESEL w ustawieniach konta (Dane osobowe).');
+            }
+        } elseif ($user->typ_klienta === 'biznesowy') {
+            if (empty($user->nazwa_firmy) || empty($user->nip)) {
+                return redirect()->route('konto')->with('error', 'Uzupełnij dane firmy (Nazwa firmy i NIP) w ustawieniach konta.');
+            }
+        }
+
         $suma = collect($koszyk)->sum('cena_calkowita');
         $kaucja = collect($koszyk)->sum('kaucja');
         

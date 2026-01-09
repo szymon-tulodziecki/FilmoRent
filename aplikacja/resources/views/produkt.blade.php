@@ -125,7 +125,7 @@
                     </div>
                 </div>
 
-                <div class="lg:col-span-5" data-x-data="rezerwacja({{ $sprzet->cena_doba }})">
+                <div class="lg:col-span-5" x-data="rezerwacja({{ $sprzet->cena_doba }})">
                     <div class="sticky top-24 space-y-6">
                         
                         <div>
@@ -150,14 +150,14 @@
                                 <form action="{{ route('koszyk.dodaj') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="sprzet_id" value="{{ $sprzet->id }}">
-                                    <input type="hidden" name="data_od" data-x-model="startFormatted">
-                                    <input type="hidden" name="data_do" data-x-model="endFormatted">
+                                    <input type="hidden" name="data_od" x-model="startFormatted">
+                                    <input type="hidden" name="data_do" x-model="endFormatted">
 
                                     <div class="space-y-4">
                                         <div>
                                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Wybierz termin</label>
                                             <div class="relative">
-                                                <input data-x-ref="datepicker" type="text" 
+                                                <input x-ref="datepicker" type="text" 
                                                     class="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none cursor-pointer font-medium" 
                                                     placeholder="Wybierz zakres dat..." readonly>
                                                 <div class="absolute right-4 top-3.5 text-slate-500 pointer-events-none">
@@ -166,10 +166,10 @@
                                             </div>
                                         </div>
 
-                                        <div data-x-show="days > 0" data-x-transition class="bg-slate-950/70 rounded-xl p-4 border border-slate-700 space-y-2">
+                                        <div x-show="days > 0" x-transition class="bg-slate-950/70 rounded-xl p-4 border border-slate-700 space-y-2">
                                             <div class="flex justify-between text-sm">
                                                 <span class="text-slate-400">Liczba dni</span>
-                                                <span class="text-white font-bold" data-x-text="days"></span>
+                                                <span class="text-white font-bold" x-text="days"></span>
                                             </div>
                                             <div class="flex justify-between text-sm">
                                                 <span class="text-slate-400">Cena za dobę</span>
@@ -177,16 +177,51 @@
                                             </div>
                                             <div class="pt-2 mt-2 border-t border-slate-800 flex justify-between items-center">
                                                 <span class="text-slate-300 font-bold">Suma</span>
-                                                <span class="text-amber-500 text-xl font-black" data-x-text="totalCost + ' zł'"></span>
+                                                <span class="text-amber-500 text-xl font-black" x-text="totalCost + ' zł'"></span>
                                             </div>
                                         </div>
 
+                                        <div x-show="days > 0" x-transition class="bg-slate-900/60 rounded-xl p-4 border border-slate-700 space-y-3">
+                                            <p class="text-xs text-slate-400 font-semibold uppercase tracking-wide flex items-center gap-2">
+                                                <svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                                Wymagane zgody weryfikacyjne
+                                            </p>
+                                            
+                                            <label class="flex items-start gap-3 cursor-pointer group">
+                                                <input type="checkbox" name="zgoda_weryfikacja" required class="mt-1 w-4 h-4 rounded border-slate-600 bg-slate-800 text-amber-500 focus:ring-2 focus:ring-amber-500">
+                                                <span class="text-xs text-slate-300 leading-relaxed">
+                                                    <strong class="text-white">Wyrażam zgodę</strong> na weryfikację mojej wiarygodności płatniczej w bazach danych (BIG InfoMonitor, BIK, KRD) 
+                                                    w celu oceny zdolności do terminowego zwrotu sprzętu i uregulowania zobowiązań finansowych. <span class="text-red-400">*</span>
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-start gap-3 cursor-pointer group">
+                                                <input type="checkbox" name="zgoda_ubezpieczenie" required class="mt-1 w-4 h-4 rounded border-slate-600 bg-slate-800 text-amber-500 focus:ring-2 focus:ring-amber-500">
+                                                <span class="text-xs text-slate-300 leading-relaxed">
+                                                    <strong class="text-white">Akceptuję</strong> warunki ubezpieczenia sprzętu i ponoszenia odpowiedzialności materialnej 
+                                                    za ewentualne uszkodzenia, utratę lub kradzież w okresie wypożyczenia. <span class="text-red-400">*</span>
+                                                </span>
+                                            </label>
+
+                                            <label class="flex items-start gap-3 cursor-pointer group">
+                                                <input type="checkbox" name="zgoda_dane_osobowe" required class="mt-1 w-4 h-4 rounded border-slate-600 bg-slate-800 text-amber-500 focus:ring-2 focus:ring-amber-500">
+                                                <span class="text-xs text-slate-300 leading-relaxed">
+                                                    <strong class="text-white">Zapoznałem się</strong> z <a href="{{ route('polityka-prywatnosci') }}" class="text-amber-400 hover:text-amber-300 underline" target="_blank">polityką prywatności</a> 
+                                                    i wyrażam zgodę na przetwarzanie moich danych osobowych zgodnie z RODO. <span class="text-red-400">*</span>
+                                                </span>
+                                            </label>
+
+                                            <p class="text-xs text-slate-500 italic pt-2">
+                                                <span class="text-red-400">*</span> Zgody są wymagane do realizacji wypożyczenia
+                                            </p>
+                                        </div>
+
                                         <button type="submit" 
-                                            data-x-bind-disabled="days === 0"
-                                            data-x-bind-class="days > 0 ? 'bg-amber-500 hover:bg-amber-400 text-slate-900' : 'bg-slate-800 text-slate-500 cursor-not-allowed'"
+                                            :disabled="days === 0"
+                                            :class="days > 0 ? 'bg-amber-500 hover:bg-amber-400 text-slate-900' : 'bg-slate-800 text-slate-500 cursor-not-allowed'"
                                             class="w-full py-4 rounded-xl font-bold transition-all duration-200 shadow-lg flex items-center justify-center gap-2 group">
                                             <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                                            <span data-x-text="days > 0 ? 'Dodaj do rezerwacji' : 'Wybierz daty'"></span>
+                                            <span x-text="days > 0 ? 'Dodaj do koszyka' : 'Wybierz daty'"></span>
                                         </button>
                                         
                                         <p class="text-xs text-center text-slate-500 mt-2">

@@ -195,7 +195,7 @@
                     </h3>
                     
                     <form action="{{ route('konto.update') }}" method="POST" class="space-y-6">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        @csrf
                         @method('PUT')
                         
                         <!-- EMAIL (ZAWSZE WIDOCZNE) -->

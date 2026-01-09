@@ -156,12 +156,71 @@
                 </aside>
 
                 <div class="lg:hidden w-full mb-6">
-                    <button id="toggle-filters" class="w-full flex items-center justify-center gap-2 py-3 bg-slate-800 rounded-xl border border-slate-700 text-white font-semibold">
+                    <button type="button" id="toggle-filters" class="w-full flex items-center justify-center gap-2 py-3 bg-slate-800 rounded-xl border border-slate-700 text-white font-semibold">
                         <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
                         Filtrowanie i Sortowanie
                     </button>
-                    <div id="mobile-filters-content" class="hidden mt-4 bg-slate-900 p-6 rounded-xl border border-slate-800">
-                         <p class="text-slate-400 text-center">Filtry mobilne (tutaj wstaw identyczną zawartość co w sidebarze)</p>
+                    <div id="mobile-filters-content" class="hidden mt-4 bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-6">
+                        <!-- Kategorie -->
+                        <div>
+                            <h2 class="text-white font-bold mb-4 flex items-center gap-2">
+                                <i data-lucide="grid" class="w-4 h-4 text-amber-500"></i> Kategorie
+                            </h2>
+                            <div class="space-y-2">
+                                <label class="flex items-center space-x-3 cursor-pointer group">
+                                    <span class="w-5 h-5 rounded border border-slate-500 bg-slate-900 flex items-center justify-center group-hover:border-amber-500 transition">
+                                        <input type="radio" name="kategoria" value="" onchange="document.getElementById('filter-form').submit()" class="hidden peer" {{ !request('kategoria') ? 'checked' : '' }}>
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-amber-500 opacity-0 peer-checked:opacity-100"></i>
+                                    </span>
+                                    <span class="text-slate-200 group-hover:text-white transition">Wszystkie</span>
+                                </label>
+                                @foreach($kategorie as $kat)
+                                <label class="flex items-center space-x-3 cursor-pointer group">
+                                    <span class="w-5 h-5 rounded border border-slate-500 bg-slate-900 flex items-center justify-center group-hover:border-amber-500 transition">
+                                        <input type="radio" name="kategoria" value="{{ $kat->id }}" onchange="document.getElementById('filter-form').submit()" class="hidden peer" {{ request('kategoria') == $kat->id ? 'checked' : '' }}>
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-amber-500 opacity-0 peer-checked:opacity-100"></i>
+                                    </span>
+                                    <span class="text-slate-200 group-hover:text-white transition">{{ $kat->nazwa }}</span>
+                                </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <hr class="border-slate-700">
+
+                        <!-- Cena -->
+                        <div>
+                            <h2 class="text-white font-bold mb-4 flex items-center gap-2">
+                                <i data-lucide="dollar-sign" class="w-4 h-4 text-amber-500"></i> Cena za dobę
+                            </h2>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <input type="number" name="cena_min" id="cena-min-input-mobile" value="{{ request('cena_min', 0) }}" min="0" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm" placeholder="Min" onchange="document.getElementById('filter-form').submit()">
+                                    <span class="text-slate-400">-</span>
+                                    <input type="number" name="cena_max" id="cena-max-input-mobile" value="{{ request('cena_max', 10000) }}" max="10000" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm" placeholder="Max" onchange="document.getElementById('filter-form').submit()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="border-slate-700">
+
+                        <!-- Producenci -->
+                        <div>
+                            <h2 class="text-white font-bold mb-4 flex items-center gap-2">
+                                <i data-lucide="package" class="w-4 h-4 text-amber-500"></i> Marka
+                            </h2>
+                            <div class="space-y-2 max-h-48 overflow-y-auto">
+                                @foreach($producenci as $producent)
+                                <label class="flex items-center space-x-3 cursor-pointer group">
+                                    <span class="w-4 h-4 rounded border border-slate-500 bg-slate-900 flex items-center justify-center group-hover:border-amber-500 transition">
+                                        <input type="checkbox" name="producent[]" value="{{ $producent->id }}" onchange="document.getElementById('filter-form').submit()" class="hidden peer" {{ in_array($producent->id, (array)request('producent', [])) ? 'checked' : '' }}>
+                                        <span class="w-2 h-2 bg-amber-500 rounded-sm opacity-0 peer-checked:opacity-100"></span>
+                                    </span>
+                                    <span class="text-sm text-slate-200 group-hover:text-white transition">{{ $producent->nazwa }}</span>
+                                </label>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -214,7 +273,8 @@
         const mobileFilters = document.getElementById('mobile-filters-content');
         
         if(toggleBtn) {
-            toggleBtn.addEventListener('click', () => {
+            toggleBtn.addEventListener('click', (e) => {
+                e.preventDefault();
                 mobileFilters.classList.toggle('hidden');
             });
         }

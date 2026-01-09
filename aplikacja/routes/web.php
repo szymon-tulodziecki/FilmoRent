@@ -75,6 +75,11 @@ Route::get('/o-nas', function () {
 	return view('o-nas');
 })->name('o-nas');
 
+// Polityka prywatności
+Route::get('/polityka-prywatnosci', function () {
+	return view('polityka-prywatnosci');
+})->name('polityka-prywatnosci');
+
 // Logowanie / Rejestracja klienta
 Route::get('/logowanie', [AuthController::class, 'showLoginForm'])->name('logowanie');
 Route::post('/logowanie', [AuthController::class, 'login'])->name('logowanie.store');
